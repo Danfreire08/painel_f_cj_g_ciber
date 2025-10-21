@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Painel Pontos Decisivos — F Cj Guerra Ciber</title>
+<style>
+  /* Matrix GIF background (replace URL below with your preferred GIF) */
+  :root{
+    --green:#00FF44;
+    --dark:#001100;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: 'Courier New', monospace;
+    background:#000;
+    color:var(--green);
+    overflow:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image: url('https://i.imgur.com/8rQZ3YB.gif');
+    /* Replace the URL above with your GIF extracted from the PPTX if you prefer */
+    background-size:cover;
+    background-position:center center;
+    opacity:0.16;
+    z-index:-2;
+    filter: contrast(120%) saturate(120%);
+  }
+  /* Dark overlay for table readability */
+  body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.95) 100%);
+    z-index:-1;
+  }
+
+  header{
+    text-align:center;
+    padding:18px 10px 6px 10px;
+  }
+  h1{
+    margin:0;
+    font-size:32px;
+    color:var(--green);
+    text-shadow:0 0 18px rgba(0,255,68,0.22);
+    letter-spacing:2px;
+  }
+
+  .wrap{
+    width:95%;
+    max-width:1200px;
+    margin:18px auto;
+    padding:12px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px;
+  }
+  thead th{
+    text-align:center;
+    padding:10px;
+    font-size:15px;
+    color:var(--green);
+    background:rgba(0,40,0,0.7);
+    border-radius:8px;
+    box-shadow:0 0 18px rgba(0,255,68,0.06) inset;
+  }
+  tbody tr{
+    background:linear-gradient(90deg, rgba(0,20,0,0.6), rgba(0,30,0,0.45));
+    color:var(--green);
+    border-radius:8px;
+    height:60px;
+    backdrop-filter: blur(2px);
+  }
+  td{
+    padding:10px;
+    text-align:center;
+    vertical-align:middle;
+    font-size:14px;
+  }
+
+  .pd-name{
+    font-weight:bold;
+    letter-spacing:1px;
+  }
+  .indicator{
+    max-width:420px;
+    font-size:13px;
+    opacity:0.95;
+  }
+
+  .progress-wrap{
+    width:85%;
+    margin:6px auto;
+    background:rgba(0,0,0,0.25);
+    border-radius:8px;
+    padding:6px;
+    box-shadow:0 0 8px rgba(0,255,68,0.03) inset;
+  }
+  .bar{
+    height:22px;
+    width:0%;
+    background:linear-gradient(90deg, rgba(0,255,68,0.95), rgba(0,160,10,0.95));
+    border-radius:8px;
+    text-align:center;
+    line-height:22px;
+    color:#001100;
+    font-weight:700;
+    transition: width 0.8s ease;
+  }
+
+  .btn{
+    background:var(--green);
+    color:#001100;
+    border:none;
+    padding:8px 12px;
+    font-weight:700;
+    border-radius:6px;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,255,68,0.08);
+  }
+  .btn:hover{ filter:brightness(0.95); transform:translateY(-1px); }
+
+  footer{
+    text-align:center;
+    color:rgba(0,255,68,0.6);
+    font-size:12px;
+    margin-top:12px;
+  }
+
+  /* responsive */
+  @media (max-width:800px){
+    .indicator{ display:none; }
+    thead th:nth-child(2){ display:none; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Painel dos Pontos Decisivos — F Cj Guerra Ciber</h1>
+  </header>
+
+  <div class="wrap">
+    <table aria-label="Tabela de Pontos Decisivos">
+      <thead>
+        <tr>
+          <th>Ponto Decisivo</th>
+          <th>Indicador</th>
+          <th>Progresso</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="pdBody">
+        <!-- Linhas populadas por JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <footer>Atualização automática a cada 10s • Use o botão <strong>Atualização</strong> para lançar valores (aceita <code>+10</code> para somar)</footer>
+
+<script>
+// Lista com os 10 PDs e indicadores conforme solicitado
+const PDS = [
+  { id:1, code:'PD1', name:'Concentração/Desdobramento Estratégico realizado', indicator:'Porcentagem dos destacamentos desdobrados', current:50, target:100, unit:'%' },
+  { id:2, code:'PD2', name:'Infraestruturas Estratégicas de Vermelho protegidas', indicator:'Porcentagem das Infraestruturas críticas defendidas', current:30, target:100, unit:'%' },
+  { id:3, code:'PD3', name:'Sistema C2 Az degradado', indicator:'Tempo do sistema de DAAe Az fora de operação', current:6, target:24, unit:'h' },
+  { id:4, code:'PD4', name:'Redes internas de C2 Militares e Estruturas Estratégicas Az degradadas', indicator:'Quantidade de mensagens logísticas interceptadas pela Guerra Eletrônica', current:12, target:100, unit:'msg' },
+  { id:5, code:'PD5', name:'Efeitos dos Ataque Cibernético nos Canais Comunicações neutralizado', indicator:'Nr de impactos causados por acessos não autorizados às IC de Vm', current:8, target:100, unit:'inc' },
+  { id:6, code:'PD6', name:'Ações Ciber em Ap Op Info Rlz', indicator:'Disponibilidade do Sis Com Mil de Az', current:72, target:100, unit:'%' },
+  { id:7, code:'PD7', name:'Rlz Atq Ciber sobre AAV do P Aepc Az', indicator:'Nr de aeródromos destruídos em FENO', current:1, target:10, unit:'aer' },
+  { id:8, code:'PD8', name:'Sistemas C2 secundários degradados', indicator:'Percentual de nós C2 degradados', current:22, target:100, unit:'%' },
+  { id:9, code:'PD9', name:'Ativos Info do MPL neutralizados', indicator:'Vulnerabilidades exploradas em disponibilidade pessoais e funcionais de lideranças do MPL', current:18, target:100, unit:'%' },
+  { id:10, code:'PD10', name:'Rlz Prot Ciber para preservar Sistemas da Rg', indicator:'Nr de Atq Ciber de Az sobre IC e Territórios recém incorporados', current:5, target:100, unit:'inc' }
+];
+
+// Render table rows
+const tbody = document.getElementById('pdBody');
+function render(){
+  tbody.innerHTML = '';
+  PDS.forEach((pd, idx) =>{
+    const percent = computePercent(pd);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="pd-name">${pd.code}<div style="font-size:11px;opacity:0.7">${pd.name}</div></td>
+      <td class="indicator">${pd.indicator}</td>
+      <td>
+        <div class="progress-wrap">
+          <div id="bar-${pd.id}" class="bar" style="width:${percent}%">${percent}%</div>
+          <div style="font-size:11px;margin-top:6px;color:rgba(0,255,68,0.7)">Valor atual: ${pd.current} ${pd.unit} • Meta: ${pd.target} ${pd.unit}</div>
+        </div>
+      </td>
+      <td><button class="btn" onclick="doUpdate(${pd.id})">Atualização</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function computePercent(pd){
+  // For time-based targets (like hours), higher current means more downtime; interpret percent as (current/target)*100
+  const pct = (pd.current / (pd.target || 1)) * 100;
+  return Math.round(Math.max(0, Math.min(100, pct)));
+}
+
+// Manual update handler (supports "+N" to add)
+function doUpdate(id){
+  const pd = PDS.find(x=>x.id===id);
+  const raw = prompt(`Atualizar ${pd.code} - ${pd.name}\nDigite um valor (ex: 50) ou prefixe com + para somar (ex: +10):`);
+  if(raw === null) return;
+  const v = raw.trim();
+  if(v.startsWith('+')){
+    const add = Number(v.slice(1));
+    if(isNaN(add)){ alert('Valor inválido'); return; }
+    pd.current = pd.current + add;
+  } else {
+    const num = Number(v);
+    if(isNaN(num)){ alert('Valor inválido'); return; }
+    pd.current = num;
+  }
+  // clamp reasonable values
+  pd.current = Math.max(0, pd.current);
+  render();
+}
+
+// Auto-randomized updates to simulate real-time (every 10s)
+function autoTick(){
+  PDS.forEach(pd=>{
+    // delta depends on type: percent-based [-3,3], counts [-2,2], hours [-1,1]
+    let delta = 0;
+    if(pd.unit === '%' ) delta = Math.floor(Math.random()*7)-3;
+    else if(pd.unit === 'h' ) delta = Math.floor(Math.random()*3)-1;
+    else if(pd.unit === 'msg' || pd.unit === 'inc' || pd.unit === 'aer') delta = Math.floor(Math.random()*5)-2;
+    else delta = Math.floor(Math.random()*5)-2;
+    pd.current = Math.max(0, pd.current + delta);
+    // for PD3 (hours) ensure not exceed target
+    if(pd.current > pd.target) pd.current = pd.target;
+  });
+  render();
+}
+
+// initial render
+render();
+// set interval 10 seconds
+setInterval(autoTick, 10000);
+
+
+// OPTIONAL: allow keyboard "u" to update first PD for quick demo
+document.addEventListener('keydown', (e)=>{
+  if(e.key.toLowerCase()==='u') doUpdate(1);
+});
+</script>
+</body>
+</html>
